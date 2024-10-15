@@ -1,34 +1,19 @@
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('tb_comercio', {
+        await queryInterface.createTable('permissions', {
             id: {
                 type: Sequelize.UUID,
                 defaultValue: Sequelize.UUIDV4,
                 allowNull: false,
                 primaryKey: true,
             },
-            comercio_name: {
+            name: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            cpf_cpnj: {
+            description: {
                 type: Sequelize.STRING,
-                allowNull: false,
-            },
-            endereco: {
-                type: Sequelize.STRING,
-                allowNull: false,
-            },
-            usuario_id: {
-                type: Sequelize.UUID,
-                references: {
-                    model: 'tb_users',
-                    key: 'id',
-                },
-                unique: true,
                 allowNull: true,
-                onUpdate: 'CASCADE',
-                onDelete: 'SET NULL',
             },
             created_at: {
                 type: Sequelize.DATE,
@@ -42,6 +27,6 @@ module.exports = {
     },
 
     async down(queryInterface) {
-        await queryInterface.dropTable('tb_comercio');
+        await queryInterface.dropTable('permissions');
     },
 };

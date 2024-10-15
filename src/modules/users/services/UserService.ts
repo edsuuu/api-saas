@@ -1,72 +1,54 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ErrorException } from '../../../utils/ErrorException';
+// import { ErrorException } from '../../../utils/ErrorException';
 
 import validator from 'validator';
-import { IUser } from '../interfaces/IUser';
+// import { IUser } from '../interfaces/IUser';
 import { UserRepository } from '../repository/UserRepository';
+// import { ErrorsProtocol } from '../interfaces/IUser';
+import { BusinessRepository } from '../../business/repository/BusinessRepository';
 import { Role } from '../../../types/Enums';
 
-type ErrorsProtocol = {
-    message: string;
-    campo: string;
-};
+export interface IUserService {
+    createUserNormal(userData: any): Promise<any>;
+}
 
-export default class UserService {
+export default class UserService implements IUserService {
     private readonly userRepository: UserRepository;
+    private readonly businessRepository: BusinessRepository;
 
     constructor() {
         this.userRepository = new UserRepository();
+        this.businessRepository = new BusinessRepository();
     }
 
-    async createUserNormal(userData: IUser) {
-        const errors: Array<ErrorsProtocol> = [];
-
-        console.log(userData);
-
-        const firstName = userData.first_name?.trim() || '';
+    async createUserNormal(userData: any) {
+        const name = userData.name?.trim() || '';
         const lastName = userData.last_name?.trim() || '';
+        const name_business = userData.last_name?.trim() || '';
         const email = userData.email?.trim() || '';
         const password = userData.password?.trim() || '';
 
-        const fieldsToValidate = [
-            { value: firstName, fieldName: 'Nome' },
-            { value: lastName, fieldName: 'Sobrenome' },
-            { value: email, fieldName: 'Email' },
-            { value: password, fieldName: 'Senha' },
-        ];
+        // falta rececber o nome do comercio e criar um
+        // criar o business
+        // setar o plano
 
-        fieldsToValidate.forEach((field) => {
-            this.validateEmptyField(field.value, field.fieldName, errors);
-        });
-
-        if (firstName.length < 3) {
-            errors.push({ message: 'Campo nome não pode ser menor que 3 caracteres', campo: 'Nome' });
-        }
-        if (lastName.length < 3) {
-            errors.push({ message: 'Campo sobrenome não pode ser menor que 3 caracteres', campo: 'Sobrenome' });
-        }
-        if (email.length < 3) {
-            errors.push({ message: 'Campo email não pode ser menor que 3 caracteres', campo: 'Email' });
-        }
-        if (password.length < 3) {
-            errors.push({ message: 'Campo password não pode ser menor que 3 caracteres', campo: 'Senha' });
+        if (!name || !lastName || !name_business || !email || !password) {
+            throw new Error('Campos não pode ficar vazio.');
         }
 
         if (!validator.isEmail(email)) {
-            errors.push({ message: 'Email invalido', campo: 'email' });
+            throw new Error('E-mail inválido.');
         }
 
         if (await this.userRepository.validaEmailNoBanco(email)) {
-            errors.push({ message: 'Email já existe', campo: 'email' });
+            throw new Error('E-mail já existe.');
         }
 
-        if (errors.length > 0) {
-            throw new ErrorException(errors, 400);
-        }
+        const costumerPermission = Role.Costumer;
 
-        const permission = Role.User;
+        const user = await this.userRepository.createUserNormal(name, lastName, email, password, costumerPermission);
 
-        const user = await this.userRepository.createUserNormal(firstName, lastName, email, password, permission);
+        await this.businessRepository.createBusinessWithUser(String(user.userCreated.id), name_business);
 
         return user;
     }
@@ -77,51 +59,15 @@ export default class UserService {
         }
     }
 
-    async createUserAdminGlobal(userData: IUser) {
-        const errors: any = [];
-
-        const firstName = userData.first_name?.trim() || '';
+    async createUserAdminGlobal(userData: any) {
+        const name = userData.name?.trim() || '';
         const lastName = userData.last_name?.trim() || '';
         const email = userData.email?.trim() || '';
         const password = userData.password?.trim() || '';
 
-        const fieldsToValidate = [
-            { value: firstName, fieldName: 'Nome' },
-            { value: lastName, fieldName: 'Sobrenome' },
-            { value: email, fieldName: 'Email' },
-            { value: password, fieldName: 'Senha' },
-        ];
-
-        fieldsToValidate.forEach((field) => {
-            this.validateEmptyField(field.value, field.fieldName, errors);
-        });
-
-        if (firstName.length < 3) {
-            errors.push({ message: 'Campo nome não pode ser menor que 3 caracteres', campo: 'Nome' });
-        }
-        if (lastName.length < 3) {
-            errors.push({ message: 'Campo sobrenome não pode ser menor que 3 caracteres', campo: 'Sobrenome' });
-        }
-        if (email.length < 3) {
-            errors.push({ message: 'Campo email não pode ser menor que 3 caracteres', campo: 'Email' });
-        }
-        if (password.length < 3) {
-            errors.push({ message: 'Campo password não pode ser menor que 3 caracteres', campo: 'Senha' });
-        }
-        if (!validator.isEmail(email)) {
-            errors.push({ message: 'Email invalido', campo: 'email' });
-        }
-        if (await this.userRepository.validaEmailNoBanco(email)) {
-            errors.push({ message: 'Email já existe', campo: 'email' });
-        }
-
-        if (errors.length > 0) {
-            throw new ErrorException(errors, 400);
-        }
-
         const permission = Role.Admin;
 
-        const user = await this.userRepository.createUserAdminG(firstName, lastName, email, password, permission);
+        const user = await this.userRepository.createUserAdminG(name, lastName, email, password, permission);
 
         return user;
     }

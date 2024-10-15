@@ -8,10 +8,10 @@ class AuthController {
 
     constructor() {
         this.authService = new AuthService();
-        this.store = this.store.bind(this);
+        this.auth = this.auth.bind(this);
     }
 
-    async store(req: Request, res: Response): Promise<Response> {
+    async auth(req: Request, res: Response): Promise<Response> {
         const { email, password } = req.body;
         console.log(req.body);
         if (!email || !password) {

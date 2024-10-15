@@ -1,33 +1,32 @@
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('tb_produtos', {
+        await queryInterface.createTable('plans', {
             id: {
                 type: Sequelize.UUID,
                 defaultValue: Sequelize.UUIDV4,
                 allowNull: false,
                 primaryKey: true,
             },
-            product_name: {
+            name: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            price: {
-                type: Sequelize.FLOAT,
-                allowNull: false,
-            },
-            quantidade: {
-                type: Sequelize.INTEGER,
-                allowNull: false,
-            },
-            comercio_id: {
-                type: Sequelize.UUID,
-                references: {
-                    model: 'tb_comercio',
-                    key: 'id',
-                },
+            description: {
+                type: Sequelize.TEXT,
                 allowNull: true,
-                onUpdate: 'CASCADE',
-                onDelete: 'SET NULL',
+            },
+            price: {
+                type: Sequelize.DECIMAL(10, 2),
+                allowNull: false,
+                validate: {
+                    isDecimal: true,
+                },
+            },
+            // falta o tipo se é mensal, trimestal, semestral, anual
+            duration_time: {
+                // dias ou meses ?
+                type: Sequelize.INTEGER(3),
+                allowNull: false,
             },
             created_at: {
                 type: Sequelize.DATE,
@@ -41,6 +40,6 @@ module.exports = {
     },
 
     async down(queryInterface) {
-        await queryInterface.dropTable('tb_produtos');
+        await queryInterface.dropTable('plans');
     },
 };

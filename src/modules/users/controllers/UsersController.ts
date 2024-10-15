@@ -1,30 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
-import UserService from '../services/UserService';
+import IUserService from '../services/UserService';
+import { BodyReceived } from '../interfaces/IUser';
+import { Logger } from '../../../utils/Logger';
 import { ErrorException } from '../../../utils/ErrorException';
-import { IUser } from '../interfaces/IUser';
+// import { IUser } from '../interfaces/IUser';
 
-type BodyReceived = {
-    first_name: string;
-    last_name: string;
-    email: string;
-    password: string;
-};
-class UserController {
-    private userService: UserService;
+interface IUserController {
+    createUserWithBunisess(req: Request, res: Response): Promise<void>;
+}
 
-    constructor() {
-        this.userService = new UserService();
-        this.createUserNormal = this.createUserNormal.bind(this);
+export class UserController extends Logger implements IUserController {
+    private readonly userService: IUserService;
+
+    constructor(userService: IUserService) {
+        super();
+        this.userService = userService;
     }
 
-    async createUserNormal(req: Request, res: Response) {
-        const { first_name, last_name, email, password }: BodyReceived = req.body;
+    async createUserWithBunisess(req: Request, res: Response): Promise<void> {
+        // desestruturação de obj
+        const { name, last_name, name_business, email, password }: BodyReceived = req.body;
 
-        const obj: IUser = { first_name, last_name, email, password };
+        const createUser = { name, last_name, name_business, email, password };
 
         try {
-            const user = await this.userService.createUserNormal(obj);
+            const user = await this.userService.createUserNormal(createUser);
 
             console.log(user);
 
@@ -50,13 +51,13 @@ class UserController {
     }
 
     async createUserAdmin(req: Request, res: Response) {
-        const { first_name, last_name, email, password }: BodyReceived = req.body;
+        const { name, last_name, email, password }: BodyReceived = req.body;
 
-        if (!first_name || !last_name || !email || !password) {
+        if (!name || !last_name || !email || !password) {
             return res.status(400).json({ status: 400, error: 'Todos os campos são obrigatórios' });
         }
 
-        const obj: IUser = { first_name, last_name, email, password };
+        const obj = { name, last_name, email, password };
 
         try {
             const user = await this.userService.createUserAdminGlobal(obj);
@@ -81,5 +82,3 @@ class UserController {
         }
     }
 }
-
-export default new UserController();

@@ -3,6 +3,7 @@ import { Model, DataTypes } from 'sequelize';
 import bcrypt from 'bcrypt';
 import { IUser } from '../interfaces/IUser';
 import { sequelizeConnection } from '../../../config/db/database';
+import { Role } from '../../../types/Enums';
 
 class User extends Model<IUser> {
     static isValidPassword: (password: string, hash: string) => boolean;
@@ -16,7 +17,7 @@ User.init(
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
         },
-        first_name: {
+        name: {
             type: DataTypes.STRING(128),
             allowNull: false,
         },
@@ -28,6 +29,11 @@ User.init(
             type: DataTypes.STRING(128),
             allowNull: false,
         },
+        // email_verified: {
+        //     type: DataTypes.BOOLEAN,
+        //     defaultValue: false,
+        //     allowNull: false,
+        // },
         password: {
             type: DataTypes.STRING(128),
             allowNull: false,
@@ -36,14 +42,39 @@ User.init(
                 this.setDataValue('password', hash);
             },
         },
-        roles: {
-            type: DataTypes.STRING(10),
-            defaultValue: 'user',
+        documents: {
+            type: DataTypes.STRING(128),
+            allowNull: true,
+        },
+        photo: {
+            type: DataTypes.STRING(128),
+            allowNull: true,
+        },
+        active: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true,
             allowNull: false,
         },
+        last_login: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        data_nasc: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        permission: {
+            type: DataTypes.STRING(10),
+            defaultValue: Role.Costumer,
+            allowNull: false,
+        },
+        // api_key: {
+        //     type: DataTypes.STRING(128),
+        //     allowNull: false,
+        // },
     },
     {
-        tableName: 'tb_users',
+        tableName: 'users',
         sequelize: sequelizeConnection,
         underscored: true,
     },

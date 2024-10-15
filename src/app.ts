@@ -5,7 +5,7 @@ import morgan from 'morgan';
 
 import { sequelizeConnection } from './config/db/database';
 import { adminRoute } from './modules/admin/routes/adminRoute';
-import { commerceRoute } from './modules/commerces/routes/commerceRoute';
+import { commerceRoute } from './modules/business/routes/commerceRoute';
 import { authRoute } from './modules/auth/routes/authRoute';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { reportsRoute } from './modules/reports/routes/reportsRoute';

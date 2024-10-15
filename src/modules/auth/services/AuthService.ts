@@ -16,10 +16,10 @@ export default class AuthService {
         this.userRepository = new UserRepository();
     }
 
-    async autenticarUsuario(email: string, password: string) {
+    async autenticarUsuario(emailReceived: string, passwordReceived: string) {
         const errors = [];
 
-        if (!email || !password) {
+        if (!emailReceived || !passwordReceived) {
             errors.push({ message: 'Campo Login e senha não informado', campo: 'Todos' });
         }
 
@@ -33,22 +33,23 @@ export default class AuthService {
         // }
 
         // faz uma consulta no banco com o email informado
-        const user = await this.userRepository.findByEmailAuth(email);
+        const user = await this.userRepository.findByEmailAuth(emailReceived);
 
-        console.log(user);
+        console.log('olha ele ai', user);
 
         if (!user) {
             errors.push({ message: 'Usuario não existente', campo: 'email' });
             throw new ErrorException(errors, 400);
         }
 
-        const idUser: number | undefined = user.id;
-        const nomeDoUsuario: string | undefined = user.first_name;
-        // const emailDoUsuario: string | undefined = user.email;
-        const permission: string | undefined = user.roles;
+        const id: number | undefined = user.id;
+        const name: string | undefined = user.name;
+        const email: string | undefined = user.email;
+        const permission: string | undefined = user.permission;
+
         const senhaHash: string | undefined = user.password;
 
-        const passwordIsValid = User.isValidPassword(password, senhaHash);
+        const passwordIsValid = User.isValidPassword(passwordReceived, senhaHash);
 
         if (passwordIsValid !== true) {
             errors.push({ message: 'Senha invalida', campo: 'password' });
@@ -58,7 +59,7 @@ export default class AuthService {
             throw new ErrorException(errors, 400);
         }
 
-        const token = jwt.sign({ idUser, nomeDoUsuario, permission }, process.env.TOKEN_SECRET as string, {
+        const token = jwt.sign({ id, name, email, permission }, process.env.TOKEN_SECRET as string, {
             expiresIn: process.env.TOKEN_EXPIRATION,
         });
 
@@ -69,6 +70,8 @@ export default class AuthService {
 
     usuarioAutenticado(req: Request): UserLogged | undefined {
         const authHeader = req.headers.authorization;
+
+        console.log(authHeader);
 
         if (!authHeader) {
             console.error('O token é undefined');

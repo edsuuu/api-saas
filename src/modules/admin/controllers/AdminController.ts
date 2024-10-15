@@ -36,6 +36,23 @@ class AdminController {
         return userLogged;
     }
 
+    // async criarPermissao(req: Request, res: Response) {
+    //     const { name, description } = req.body;
+
+    //     if (!name || !description) {
+    //         return res.status(400).json({ error: 'Nome e descrição são obrigatórios' });
+    //     }
+
+    //     const obj: IPermission = {
+    //         name,
+    //         description,
+    //     };
+
+    //     const result = await Permission.create(obj);
+
+    //     res.json(result);
+    // }
+
     // dashBoard(req: Request, res: Response) {}
 }
 

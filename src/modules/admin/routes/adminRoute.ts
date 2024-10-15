@@ -7,5 +7,6 @@ import { Role } from '../../../types/Enums';
 const adminRoute: Router = Router();
 
 adminRoute.get('/', AuthLoginRequired, authenticateToken([Role.Admin]), AdminController.index);
+// adminRoute.post('/permissions', AdminController.criarPermissao);
 
 export { adminRoute };

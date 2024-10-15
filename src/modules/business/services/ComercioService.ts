@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { ComercioBodyProps } from '../interface/BodyRequest';
-import { CommerceRepository } from '../repository/ComercioRepository';
+import { BusinessRepository } from '../repository/BusinessRepository';
 
 export default class ComercioService {
-    private commerceRepository: CommerceRepository;
+    private commerceRepository: BusinessRepository;
 
     constructor() {
-        this.commerceRepository = new CommerceRepository();
+        this.commerceRepository = new BusinessRepository();
     }
 
     async criarComercio(userData: ComercioBodyProps) {

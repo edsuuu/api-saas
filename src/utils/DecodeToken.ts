@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 interface DecodedToken {
-    idUser: string;
+    id: string;
     nomeDoUsuario: string;
     emailDoUsuario: string;
     permission: string[];
@@ -34,7 +34,7 @@ export const receberIdPeloToken = (authHeader: string): IdAndPermission | null |
     if (decodedToken === undefined || decodedToken === null) return;
 
     const objIdAndPermission: IdAndPermission | null = {
-        id: decodedToken.idUser,
+        id: decodedToken.id,
         permission: decodedToken.permission,
     };
 

@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelizeConnection } from '../../../config/db/database';
-import { Comercio } from './Commerce';
+import { Business } from './Business';
 
 class Produto extends Model {}
 
@@ -11,22 +11,35 @@ Produto.init(
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
         },
-        product_name: {
+        name: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        price: {
-            type: DataTypes.FLOAT,
+
+        description: {
+            type: DataTypes.TEXT,
             allowNull: false,
         },
-        quantidade: {
+        price: {
+            type: DataTypes.DECIMAL(10, 2),
+            allowNull: false,
+        },
+        stock: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        comercio_id: {
+        image: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        category: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        business_id: {
             type: DataTypes.UUID,
             references: {
-                model: 'tb_comercio',
+                model: 'business',
                 key: 'id',
             },
             allowNull: false,
@@ -35,13 +48,13 @@ Produto.init(
         },
     },
     {
-        tableName: 'tb_produtos',
+        tableName: 'products',
         sequelize: sequelizeConnection,
         underscored: true,
     },
 );
 
-Comercio.hasMany(Produto, { foreignKey: 'comercio_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Produto.belongsTo(Comercio, { foreignKey: 'comercio_id' });
+Business.hasMany(Produto, { foreignKey: 'business_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Produto.belongsTo(Business, { foreignKey: 'business_id' });
 
 export { Produto };

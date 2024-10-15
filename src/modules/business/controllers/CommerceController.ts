@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import AuthService from '../../auth/services/AuthService';
-import { receberIdPeloToken } from '../../../utils/DecodeToken';
-import { ComercioBodyProps } from '../interface/BodyRequest';
+// import { receberIdPeloToken } from '../../../utils/DecodeToken';
+// import { ComercioBodyProps } from '../interface/BodyRequest';
 import ComercioService from '../services/ComercioService';
 
-import { Comercio } from '../entities/Commerce';
+import { Business } from '../entities/Business';
 import { User } from '../../users/entities/User';
-import { Produto } from '../entities/Products';
+// import { Produto } from '../entities/Products';
 
 class CommerceController {
     protected authService: AuthService;
@@ -17,37 +17,18 @@ class CommerceController {
         this.comercioService = new ComercioService();
         this.index = this.index.bind(this);
 
-        this.createComercio = this.createComercio.bind(this);
+        // this.createComercio = this.createComercio.bind(this);
         this.trazerDadosDoUsuarioCompleto = this.trazerDadosDoUsuarioCompleto.bind(this);
     }
 
-    createComercio(req: Request, res: Response) {
+    public async trazerDadosDoUsuarioCompleto(req: Request, res: Response) {
         const userLogged = this.authService.usuarioAutenticado(req);
 
         console.log(userLogged);
 
-        const client_id = userLogged?.id;
-
-        const { comercio_name, cpf_cnpj, endereco } = req.body;
-
-        const obj: ComercioBodyProps = { comercio_name, cpf_cnpj, endereco, client_id };
-
-        const criarComercios = this.comercioService.criarComercio(obj);
-
-        res.json(criarComercios);
-    }
-
-    async trazerDadosDoUsuarioCompleto(req: Request, res: Response) {
-        const userLogged = this.authService.usuarioAutenticado(req);
-
-        const { ativos } = req.query;
-
-        console.log('teste:', ativos);
-
         const user = await User.findByPk(userLogged?.id, {
             include: {
-                model: Comercio,
-                include: [Produto],
+                model: Business,
             },
         });
 
@@ -57,19 +38,20 @@ class CommerceController {
 
         const userJson = user.toJSON();
 
-        /* ocultar alguns campos  */
-        const testiser = {
+        const userRetorned = {
             ...userJson,
             password: undefined,
-            roles: undefined,
-            Comercio: {
-                ...userJson.Comercio,
-                cpf_cpnj: undefined,
-                usuario_id: undefined,
+            created_at: undefined,
+            updated_at: undefined,
+            Business: {
+                ...userJson.Business,
+                user_id: undefined,
+                created_at: undefined,
+                updated_at: undefined,
             },
         };
-        console.log(userLogged);
-        res.json(testiser);
+
+        res.json(userRetorned);
     }
 
     index(req: Request, res: Response) {
@@ -85,18 +67,18 @@ class CommerceController {
         }
     }
 
-    usuarioAutenticado(req: Request) {
-        const authHeader = req.headers.authorization;
+    // usuarioAutenticado(req: Request) {
+    //     const authHeader = req.headers.authorization;
 
-        if (authHeader === undefined) return 'error o token é undefined ';
+    //     if (authHeader === undefined) return 'error o token é undefined ';
 
-        const userLogged = receberIdPeloToken(authHeader);
+    //     const userLogged = receberIdPeloToken(authHeader);
 
-        console.log(userLogged);
-        console.log(userLogged?.id, userLogged?.permission);
+    //     console.log(userLogged);
+    //     console.log(userLogged?.id, userLogged?.permission);
 
-        return userLogged;
-    }
+    //     return userLogged;
+    // }
 }
 
 export default new CommerceController();

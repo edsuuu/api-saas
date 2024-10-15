@@ -1,26 +1,30 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { User } from '../entities/User';
-import { IUser } from '../interfaces/IUser';
+// import { IUser } from '../interfaces/IUser';
 
 export class UserRepository {
-    constructor(protected user = User) {}
+    constructor(private readonly user = User) {}
 
-    async createUserNormal(first_name: string, last_name: string, email: string, password: string, roles: string) {
+    async createUserNormal(nameReceived: string, last_nameReceived: string, emailReceived: string, passwordReceived: string, permissionReceived: string) {
         try {
-            const usuarioRecebido: IUser = { first_name, last_name, email, password, roles };
+            const usuarioRecebido: any = { name: nameReceived, last_name: last_nameReceived, email: emailReceived, password: passwordReceived, permission: permissionReceived };
 
             // if ((await this.validaEmailNoBanco(usuarioRecebido.email)) === true) return 'Email ja existe';
 
-            await this.user.create(usuarioRecebido);
+            const { dataValues } = await this.user.create(usuarioRecebido);
 
-            return { mensagem: 'Usuario created ', userCreated: { first_name, email } };
+            const { id, name, email } = dataValues;
+
+            return { mensagem: 'Usuario created ', userCreated: { id, name, email } };
         } catch (error) {
+            console.log(error);
             throw new Error(`Não foi possivel fazer o cadastro do Usuário: ${error}`);
         }
     }
 
-    async createUserAdminG(first_name: string, last_name: string, email: string, password: string, roles: string) {
+    async createUserAdminG(nameReceived: string, last_nameReceived: string, emailReceived: string, passwordReceived: string, permissionReceived: string) {
         try {
-            const usuarioRecebido: IUser = { first_name, last_name, email, password, roles };
+            const usuarioRecebido: any = { nameReceived, last_nameReceived, emailReceived, passwordReceived, permissionReceived };
 
             console.log(usuarioRecebido);
 
@@ -28,7 +32,7 @@ export class UserRepository {
 
             await this.user.create(usuarioRecebido);
 
-            return { mensagem: 'Admin created', userCreated: { first_name, email } };
+            return { mensagem: 'Admin created', userCreated: { nameReceived, last_nameReceived, emailReceived, passwordReceived } };
         } catch (error) {
             // console.log(error);
             throw new Error(`Não foi possivel fazer o cadastro do Usuário: ${error}`);
@@ -57,9 +61,9 @@ export class UserRepository {
 
             const data = user.dataValues;
 
-            const { id, first_name, email, password, roles } = data;
+            const { id, name, email, password, permission } = data;
 
-            return { id, first_name, email, password, roles };
+            return { id, name, email, password, permission };
         } catch (error) {
             throw new Error(`Unable to find user: ${error}`);
         }

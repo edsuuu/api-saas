@@ -9,23 +9,31 @@ module.exports = {
         return queryInterface.bulkInsert(
             'tb_users',
             [
+                // {
+                //     id: uuidv4(),
+                //     first_name: 'Edsu',
+                //     last_name: 'admin',
+                //     email: 'edsu@edsu.com',
+                //     password:
+                //     roles: 'admin',
+                //     created_at: new Date(),
+                //     updated_at: new Date(),
+                // },
                 {
                     id: uuidv4(),
-                    first_name: 'Edsu',
-                    last_name: 'admin',
-                    email: 'edsu@edsu.com',
+                    name: 'Edsu',
+                    last_name: 'Silva',
+                    email: 'asdadsad.silasdasdava@example.com',
                     password: await bcrypt.hash('123456', 10),
-                    roles: 'admin',
-                    created_at: new Date(),
-                    updated_at: new Date(),
-                },
-                {
-                    id: uuidv4(),
-                    first_name: 'Comercio',
-                    last_name: 'norte',
-                    email: 'mercado@norte.com',
-                    password: await bcrypt.hash('123456', 10),
-                    roles: 'costumer',
+                    cpf: '123.456.789-00',
+                    cnpj: null,
+                    photo: 'https://example.com/photos/asdasdad.jpg',
+                    active: true,
+                    number_phone: '+5511999999999',
+                    last_login: new Date(),
+                    email_verified: true,
+                    data_nasc: new Date('1990-05-15'),
+                    api_key: 'dasdadau9hd17h3ujdha97^T^@#@2',
                     created_at: new Date(),
                     updated_at: new Date(),
                 },
@@ -36,7 +44,7 @@ module.exports = {
     async down(queryInterface, Sequelize) {
         return queryInterface.bulkDelete('tb_users', {
             email: {
-                [Sequelize.Op.in]: ['edsu@edsu.com', 'mercado@norte.com'],
+                [Sequelize.Op.in]: ['asdadsad.silasdasdava@example.com'],
             },
         });
     },
