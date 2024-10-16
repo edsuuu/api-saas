@@ -8,19 +8,18 @@ interface DecodedToken {
     exp: number;
 }
 
-export const decodeToken = (token: string): DecodedToken | null => {
-    try {
-        return jwt.verify(token, process.env.TOKEN_SECRET as string) as DecodedToken;
-    } catch (error) {
-        // console.log('Token decode error:', error);
-        return null;
-    }
-};
-
 interface IdAndPermission {
     id: string;
     permission: string[];
 }
+
+export const decodeToken = (token: string): DecodedToken | null => {
+    try {
+        return jwt.verify(token, process.env.TOKEN_SECRET as string) as DecodedToken;
+    } catch (error) {
+        return null;
+    }
+};
 
 export const receberIdPeloToken = (authHeader: string): IdAndPermission | null | undefined => {
     const token = authHeader && authHeader.split(' ')[0];

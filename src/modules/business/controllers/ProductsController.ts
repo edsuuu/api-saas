@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import AuthService from '../../auth/services/AuthService';
 
 import { Business } from '../entities/Business';
-import { Produto } from '../entities/Products';
+import { Products } from '../entities/Products';
 
 interface Produtos {
     id: number;
@@ -23,27 +23,28 @@ class ProductsController {
     }
 
     async cadastrarProdutos(req: Request, res: Response) {
-        // const userLogged = this.authService.usuarioAutenticado(req);
+        const userLogged = this.authService.usuarioAutenticado(req);
 
-        // console.log(userLogged?.id);
+        const buscarRestaurante = await Business.findOne({
+            where: { user_id: userLogged?.id },
+        });
+        // console.log(buscarRestaurante);
 
-        // const buscarRestaurante = await Business.findOne({
-        //     where: { usuario_id: userLogged?.id },
-        // });
+        const idRestaurante = buscarRestaurante?.dataValues.id;
 
-        // const idRestaurante = buscarRestaurante?.dataValues.id;
+        const { name, price, stock, description, category, image } = req.body;
 
-        // const { product_name, price, quantidade } = req.body;
+        const produto = await Products.create({
+            name,
+            price,
+            stock,
+            description,
+            category,
+            image,
+            business_id: idRestaurante,
+        });
 
-        // const produto = await Produto.create({
-        //     product_name,
-        //     price,
-        //     quantidade,
-        //     comercio_id: idRestaurante,
-        // });
-
-        // res.json({ produto });
-        res.json('falta editar a criacao do produto');
+        res.json({ produto });
     }
 
     async trazerProdutosDoCostumer(req: Request, res: Response) {
@@ -69,7 +70,7 @@ class ProductsController {
             const idRestaurante = buscarRestaurante.dataValues?.id;
             console.log(idRestaurante);
 
-            const produtos = await Produto.findAll({ where: { business_id: idRestaurante } });
+            const produtos = await Products.findAll({ where: { business_id: idRestaurante } });
 
             res.json({ todosProdutos: produtos });
         } catch (error) {
@@ -106,14 +107,14 @@ class ProductsController {
                 return res.status(400).json({ error: 'ID do produto não fornecido' });
             }
 
-            const { product_name, price, quantidade } = req.body;
+            const { name, price, stock, description, category, image } = req.body;
 
-            if (!product_name || !price || !quantidade) {
-                return res.status(400).json({ error: 'Preencha todos os campos' });
-            }
+            // if (!product_name || !price || !quantidade) {
+            //     return res.status(400).json({ error: 'Preencha todos os campos' });
+            // }
 
             const buscarRestaurante = await Business.findOne({
-                where: { usuario_id: userLogged.id },
+                where: { user_id: userLogged.id },
             });
 
             if (!buscarRestaurante) {
@@ -122,10 +123,10 @@ class ProductsController {
 
             const idRestaurante = buscarRestaurante.dataValues?.id;
 
-            const produto = await Produto.findOne({
+            const produto = await Products.findOne({
                 where: {
                     id: produtoParam,
-                    comercio_id: idRestaurante,
+                    business_id: idRestaurante,
                 },
             });
 
@@ -135,9 +136,12 @@ class ProductsController {
             console.log(produto);
 
             const produtoAtualizado = await produto.update({
-                product_name,
+                name,
                 price,
-                quantidade,
+                stock,
+                description,
+                category,
+                image,
             });
 
             return res.json({ msg: 'Produto atualizado', produtoAtualizado });
@@ -158,7 +162,7 @@ class ProductsController {
             const produtoParam = req.params.id;
 
             const buscarRestaurante = await Business.findOne({
-                where: { usuario_id: userLogged.id },
+                where: { user_id: userLogged.id },
             });
 
             if (!buscarRestaurante) {
@@ -167,10 +171,10 @@ class ProductsController {
 
             const idRestaurante = buscarRestaurante.dataValues?.id;
 
-            const produto = await Produto.findOne({
+            const produto = await Products.findOne({
                 where: {
                     id: produtoParam,
-                    comercio_id: idRestaurante,
+                    business_id: idRestaurante,
                 },
             });
 

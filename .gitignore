@@ -3,4 +3,5 @@ node_modules
 package-lock.json
 ExemploTestesComClasses
 dist
-logs/*
+logs
+app.log

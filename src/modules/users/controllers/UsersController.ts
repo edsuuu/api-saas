@@ -4,7 +4,6 @@ import IUserService from '../services/UserService';
 import { BodyReceived } from '../interfaces/IUser';
 import { Logger } from '../../../utils/Logger';
 import { ErrorException } from '../../../utils/ErrorException';
-// import { IUser } from '../interfaces/IUser';
 
 interface IUserController {
     createUserWithBunisess(req: Request, res: Response): Promise<void>;

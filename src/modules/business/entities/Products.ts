@@ -2,9 +2,9 @@ import { Model, DataTypes } from 'sequelize';
 import { sequelizeConnection } from '../../../config/db/database';
 import { Business } from './Business';
 
-class Produto extends Model {}
+class Products extends Model {}
 
-Produto.init(
+Products.init(
     {
         id: {
             type: DataTypes.UUID,
@@ -18,7 +18,7 @@ Produto.init(
 
         description: {
             type: DataTypes.TEXT,
-            allowNull: false,
+            allowNull: true,
         },
         price: {
             type: DataTypes.DECIMAL(10, 2),
@@ -54,7 +54,7 @@ Produto.init(
     },
 );
 
-Business.hasMany(Produto, { foreignKey: 'business_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Produto.belongsTo(Business, { foreignKey: 'business_id' });
+Business.hasMany(Products, { foreignKey: 'business_id', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Products.belongsTo(Business, { foreignKey: 'business_id' });
 
-export { Produto };
+export { Products };
